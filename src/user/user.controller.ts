@@ -1,0 +1,62 @@
+import { RegisterUserDto } from './dto/register.dto';
+import { LoginUserDto } from './dto/login.dto';
+import {
+  Controller,
+  Post,
+  Body,
+  Inject,
+  Req,
+  Res,
+  Get,
+  ValidationPipe,
+  HttpException,
+  HttpStatus, Logger
+} from "@nestjs/common";
+import { UserService } from './user.service';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
+import { ApiOperation } from '@nestjs/swagger';
+import { User } from './entities/user.entity';
+import { ResultData } from '../common/utils/result';
+import { CreateTokenDto } from './dto/create-token.dto';
+import { VerifyCodeData } from './dto/VerifyCodeDto.dto';
+import { ApiResult } from '../common/decorators/api-result.decorator';
+import { AllowAnon } from '../common/decorators/allow-anon.decorator';
+
+@Controller('user')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
+
+  @Inject(JwtService)
+  private jwtService: JwtService;
+  private logger = new Logger();
+  @Post('login')
+  @ApiOperation({ summary: '登录' })
+  @ApiResult(CreateTokenDto)
+  @AllowAnon()
+  async login(@Body() user: LoginUserDto): Promise<ResultData> {
+    return await this.userService.login(user);
+  }
+
+  @Post('register')
+  @ApiOperation({ summary: '用户注册' })
+  @ApiResult(RegisterUserDto)
+  @AllowAnon()
+  async register(@Body() registerUser: RegisterUserDto) {
+    this.logger.log('registerUser', registerUser);
+    return await this.userService.register(registerUser);
+  }
+  @Post('sendVerifyCode')
+  async sendVerifyCode(@Body() verifyCodeData: VerifyCodeData) {
+    try {
+      //  调用服务层方法来发送验证码
+      return await this.userService.sendVerificationCode(verifyCodeData.phone); // 返回验证码或其他适当的响应
+    } catch (error) {
+      // 捕获异常并返回适当的错误响应
+      throw new HttpException(
+        '验证码发送失败',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
