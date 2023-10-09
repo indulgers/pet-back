@@ -1,5 +1,9 @@
 // verify-code.dto.ts
 
+import { IsNotEmpty, IsString } from 'class-validator';
+
 export class VerifyCodeData {
-  phone: string;
+  @IsString()
+  @IsNotEmpty()
+  mobile: string;
 }

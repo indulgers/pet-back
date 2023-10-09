@@ -2,57 +2,62 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('user')
 export class User {
   @ApiProperty({ type: String, description: 'id' })
-  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @PrimaryGeneratedColumn()
   public id: string;
 
-  @Exclude({ toPlainOnly: true }) // 输出屏蔽密码
+  @ApiProperty({ type: String, description: '用户id' })
   @Column({
     type: 'varchar',
-    length: 200,
-    nullable: false,
-    comment: '用户登录密码',
+    length: 64,
+    comment: '用户id',
+    default: '',
   })
-  public password: string;
-
-  @Exclude({ toPlainOnly: true }) // 输出屏蔽盐
-  @Column({
-    type: 'varchar',
-    length: 200,
-    comment: '盐',
-    nullable: false,
-  })
-  public salt: string;
+  public user_id: string;
 
   @ApiProperty({ type: String, description: '用户登录名' })
   @Column({
+    type: 'varchar',
     length: 50,
-    comment: '用户名',
+    comment: '用户昵称',
+    default: '',
   })
-  username: string;
-
-  @ApiProperty({ type: String, description: '邮箱' })
-  @Column({
-    length: 50,
-    comment: '邮箱',
-  })
-  email: string;
+  nickname: string;
 
   @ApiProperty({ type: String, description: '手机号' })
   @Column({
+    type: 'varchar',
     length: 50,
     comment: '手机号',
+    default: '0',
   })
-  phone: string;
+  mobile: string;
 
+  @ApiProperty({ type: Number, description: '角色' })
+  @Column({
+    type: 'int',
+    comment: '角色',
+    default: () => 0,
+  })
+  role: number;
+
+  @ApiProperty({ type: Number, description: '用户状态' })
+  @Column({
+    type: 'int',
+    comment: '用户状态',
+    default: () => 0,
+  })
+  status: number;
+
+  @ApiProperty({ type: String, description: '' })
   @ApiProperty({ type: Date, description: '创建时间' })
   @CreateDateColumn({
     comment: '创建时间',

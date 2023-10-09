@@ -7,15 +7,11 @@ import { User } from './entities/user.entity';
 import * as crypto from 'crypto';
 import { ResultData } from '../common/utils/result';
 import { AppHttpCode } from '../common/enums/code.enum';
-import { genSalt } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { instanceToPlain } from 'class-transformer';
 import { RedisService } from '../redis/redis.service';
-function md5(str) {
-  const hash = crypto.createHash('md5');
-  hash.update(str);
-  return hash.digest('hex');
-}
+import { guid } from '../common/utils/utils';
+import { UserDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UserService {
@@ -32,11 +28,11 @@ export class UserService {
 
   private readonly phoneNumberRegex = /^1[3456789]\d{9}$/;
   // 模拟存储验证码的对象，实际应该存储在数据库或缓存中
-  private verificationCodes: { [phone: string]: string } = {};
-  async sendVerificationCode(phone: string): Promise<ResultData> {
+  private verificationCodes: { [mobile: string]: string } = {};
+  async sendVerificationCode(mobile: string): Promise<ResultData> {
     // 生成随机的六位验证码
 
-    if (!this.isPhoneNumberValid(phone))
+    if (!this.isPhoneNumberValid(mobile))
       return ResultData.fail(
         AppHttpCode.USER_PHONE_NOT_FOUND,
         '非法的手机号格式',
@@ -44,26 +40,28 @@ export class UserService {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     // 模拟发送验证码的操作，这里只是输出到控制台
-    console.log(`Sending verification code ${code} to ${phone}`);
-    await this.redisService.set(`verifyCode_${phone}`, code, 5 * 60);
+    console.log(`Sending verification code ${code} to ${mobile}`);
+    await this.redisService.set(`verifyCode_${mobile}`, code, 5 * 60);
 
     // 存储验证码，以便后续验证
-    this.verificationCodes[phone] = code;
+    this.verificationCodes[mobile] = code;
 
     // 返回生成的验证码
     return ResultData.ok(code);
   }
 
-  async verifyCode(phone: string, code: string): Promise<boolean> {
-    const storedCode = this.verificationCodes[phone];
+  // 验证用户输入的验证码是否与存储的验证码匹配
+  async verifyCode(mobile: string, code: string): Promise<boolean> {
+    const storedCode = this.verificationCodes[mobile];
 
     // 检查是否有存储的验证码，并且匹配用户输入的验证码
     return storedCode && storedCode === code;
   }
 
+  // 用户登录函数
   async login(user: LoginUserDto): Promise<ResultData> {
     const foundUser = await this.userRepository.findOneBy({
-      phone: user.phone,
+      mobile: user.mobile,
     });
 
     if (!foundUser) {
@@ -72,20 +70,20 @@ export class UserService {
         '用户手机号不存在',
       );
     }
-    //verifyCode wrong
-    if (!(await this.verifyCode(user.phone, user.verifyCode))) {
+    // 验证验证码是否正确
+    if (!(await this.verifyCode(user.mobile, user.verifyCode))) {
       return ResultData.fail(AppHttpCode.USER_VERIFY_CODE_ERROR, '验证码错误');
     }
 
     // 生成 token
-    const data = this.genToken({ phone: user.phone });
+    const data = this.genToken({ mobile: user.mobile });
     this.logger.log(data);
     return ResultData.ok(data);
   }
 
+  // 用户注册函数
   async register(user: RegisterUserDto): Promise<ResultData> {
-    const verifyCode = await this.redisService.get(`verifyCode_${user.phone}`);
-    const salt = await genSalt();
+    const verifyCode = await this.redisService.get(`verifyCode_${user.mobile}`);
     if (!verifyCode) {
       return ResultData.fail(
         AppHttpCode.USER_VERIFY_CODE_INVALID,
@@ -98,7 +96,7 @@ export class UserService {
     }
 
     const foundUser = await this.userRepository.findOneBy({
-      phone: user.phone,
+      mobile: user.mobile,
     });
 
     if (foundUser) {
@@ -106,12 +104,10 @@ export class UserService {
     }
 
     const newUser = new User();
-    newUser.username = user.username;
-    newUser.password = md5(user.password);
-    newUser.email = user.email;
-    newUser.phone = user.phone;
-    newUser.salt = salt;
-    this.logger.log(newUser.username);
+    newUser.nickname = user.nickname;
+    newUser.mobile = user.mobile;
+    newUser.user_id = guid();
+    this.logger.log(newUser.nickname);
     try {
       await this.userRepository.save(newUser);
       return ResultData.ok(instanceToPlain(newUser));
@@ -121,13 +117,11 @@ export class UserService {
     }
   }
 
-  genToken(payload: { phone: string }): {
+  genToken(payload: { mobile: string }): {
     Token: string;
   } {
     const Token = this.jwtService.sign(payload, { expiresIn: '30m' });
     this.logger.log(Token);
-    // const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    // this.logger.log(refreshToken);
     return { Token };
   }
 
@@ -138,4 +132,13 @@ export class UserService {
   /**
    * 生成刷新 token
    */
+  async getUserInfo(mobile: string): Promise<User | null> {
+    // 在数据库中查找用户，你可以使用 userRepository 或者其他相关的方法
+    const foundUser = await this.userRepository.findOneBy({ mobile });
+    if (!foundUser) {
+      return null; // 如果用户不存在，返回 null
+    }
+    // 如果用户存在，你可以在这里处理返回的用户信息，例如过滤敏感信息等
+    return foundUser;
+  }
 }

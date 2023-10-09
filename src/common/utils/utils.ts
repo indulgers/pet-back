@@ -52,3 +52,10 @@ export function objAttrToCamelOrUnderline(
   });
   return _target;
 }
+//生成uuid
+export function guid(): string {
+  return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    return r.toString(16);
+  });
+}

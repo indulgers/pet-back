@@ -10,7 +10,8 @@ import {
   Get,
   ValidationPipe,
   HttpException,
-  HttpStatus, Logger
+  HttpStatus,
+  Logger, Param
 } from "@nestjs/common";
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -50,7 +51,7 @@ export class UserController {
   async sendVerifyCode(@Body() verifyCodeData: VerifyCodeData) {
     try {
       //  调用服务层方法来发送验证码
-      return await this.userService.sendVerificationCode(verifyCodeData.phone); // 返回验证码或其他适当的响应
+      return await this.userService.sendVerificationCode(verifyCodeData.mobile); // 返回验证码或其他适当的响应
     } catch (error) {
       // 捕获异常并返回适当的错误响应
       throw new HttpException(
@@ -58,5 +59,16 @@ export class UserController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Get('getUserInfo/:mobile')
+  async getUserInfo(@Param('mobile') mobile: string) {
+    const userInfo = await this.userService.getUserInfo(mobile);
+
+    if (!userInfo) {
+      return { message: '用户不存在' }; // 可以根据需要返回适当的响应
+    }
+
+    return userInfo; // 返回用户信息
   }
 }
