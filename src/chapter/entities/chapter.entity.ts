@@ -3,8 +3,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn, PrimaryGeneratedColumn
-} from "typeorm";
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('chapter')
@@ -18,6 +19,8 @@ export class Chapter {
     type: 'varchar',
     length: 64,
     comment: '文案id',
+    nullable: false, // 设置为非 NULL
+    default: '', // 默认值为空字符串
   })
   public script_id: string;
 
@@ -26,6 +29,7 @@ export class Chapter {
     type: 'int',
     default: 0,
     comment: '章节序号',
+    nullable: false, // 设置为非 NULL
   })
   public chapter_number: number;
 
@@ -33,15 +37,17 @@ export class Chapter {
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
     comment: '章节名称',
+    nullable: true, // 允许为 NULL
+    default: null, // 默认值为 NULL
   })
-  public chapter_name: string;
+  public chapter_name: string | null; // 使用联合类型，允许为 null
 
   @ApiProperty({ type: String, description: '章节角色' })
   @Column({
     type: 'text',
     comment: '章节角色 (所有角色的JSON数组)',
+    nullable: true,
   })
   public chapter_roles: string;
 
@@ -49,6 +55,7 @@ export class Chapter {
   @Column({
     type: 'text',
     comment: '章节内容',
+    nullable: true,
   })
   public chapter_content: string;
 
@@ -56,6 +63,7 @@ export class Chapter {
   @Column({
     type: 'longtext',
     comment: '文案数据',
+    nullable: true,
   })
   public script_data: string;
 
@@ -64,6 +72,7 @@ export class Chapter {
     type: 'int',
     default: 0,
     comment: '章节状态',
+    nullable: false, // 设置为非 NULL
   })
   public status: number;
 

@@ -11,10 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity('roles_lora')
 export class RolesLora {
   @ApiProperty({ type: Number, description: 'id' })
-  @PrimaryColumn({
-    type: 'int',
-    comment: 'id',
-  })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @ApiProperty({ type: String, description: 'Lora ID' })
@@ -22,6 +19,7 @@ export class RolesLora {
     type: 'varchar',
     length: 32,
     comment: 'Lora ID',
+    nullable: false, // 设置为非 NULL
   })
   public lora_id: string;
 
@@ -30,6 +28,7 @@ export class RolesLora {
     type: 'varchar',
     length: 32,
     comment: '文案id',
+    nullable: false, // 设置为非 NULL
   })
   public script_id: string;
 
@@ -38,6 +37,7 @@ export class RolesLora {
     type: 'varchar',
     length: 32,
     comment: '角色id',
+    nullable: false, // 设置为非 NULL
   })
   public role_id: string;
 
@@ -45,46 +45,52 @@ export class RolesLora {
   @Column({
     type: 'text',
     comment: 'Lora模型信息',
+    nullable: true,
   })
   public lora_model_info: string;
 
-  @ApiProperty({ type: String, description: 'Lora模型链接' })
+  @ApiProperty({ type: String, description: 'Lora模型地址' })
   @Column({
     type: 'varchar',
     length: 255,
-    comment: 'Lora模型链接',
+    comment: 'Lora模型地址',
+    nullable: true,
   })
   public lora_model_url: string;
 
-  @ApiProperty({ type: String, description: '配置链接' })
+  @ApiProperty({ type: String, description: '配置地址' })
   @Column({
     type: 'varchar',
     length: 255,
-    comment: '配置链接',
+    comment: '配置地址',
+    nullable: true,
   })
   public config_url: string;
 
-  @ApiProperty({ type: String, description: '角色视图图像链接' })
+  @ApiProperty({ type: String, description: '角色视图图像地址' })
   @Column({
     type: 'varchar',
     length: 255,
     comment: '5 views of role',
+    nullable: true,
   })
   public views_img_url: string;
 
-  @ApiProperty({ type: String, description: '训练图像链接' })
+  @ApiProperty({ type: String, description: '训练图像地址' })
   @Column({
     type: 'varchar',
     length: 255,
-    comment: '训练图像链接',
+    comment: '训练图像地址',
+    nullable: true,
   })
   public train_img_url: string;
 
-  @ApiProperty({ type: String, description: '演示链接' })
+  @ApiProperty({ type: String, description: '演示地址' })
   @Column({
     type: 'varchar',
     length: 255,
-    comment: '演示链接',
+    comment: '演示地址',
+    nullable: true,
   })
   public demo_url: string;
 
@@ -92,6 +98,7 @@ export class RolesLora {
   @Column({
     type: 'longtext',
     comment: '额外信息',
+    nullable: true,
   })
   public extra: string;
 
@@ -100,6 +107,7 @@ export class RolesLora {
     type: 'int',
     default: 0,
     comment: '状态',
+    nullable: false, // 设置为非 NULL
   })
   public status: number;
 

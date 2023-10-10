@@ -11,8 +11,11 @@ import {
   ValidationPipe,
   HttpException,
   HttpStatus,
-  Logger, Param
-} from "@nestjs/common";
+  Logger,
+  Param,
+  UnauthorizedException,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -70,5 +73,22 @@ export class UserController {
     }
 
     return userInfo; // 返回用户信息
+  }
+
+  @Get('refresh')
+  async refresh(@Query('refresh_token') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+
+      const user = await this.userService.findUserById(data.userId);
+
+      const Token = this.userService.genToken({ mobile: user.mobile });
+
+      return {
+        Token,
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
   }
 }

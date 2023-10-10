@@ -49,10 +49,9 @@ export class Project {
 
   @ApiProperty({ type: String, description: '角色信息' })
   @Column({
-    type: 'varchar',
+    type: 'longtext',
     comment: '角色信息',
-    nullable: false, // 设置为非 NULL
-    default: '', // 默认值为空字符串
+    nullable: true, // 允许为 NULL
   })
   public roles_info: string;
 
@@ -61,8 +60,7 @@ export class Project {
     type: 'varchar',
     length: 255,
     comment: '封面URL',
-    nullable: false, // 设置为非 NULL
-    default: '', // 默认值为空字符串
+    nullable: true, // 允许为 NULL
   })
   public cover_url: string;
 

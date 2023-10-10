@@ -22,6 +22,7 @@ export class Artifact {
     type: 'varchar',
     length: 32,
     comment: '项目id',
+    nullable: false, // 设置为非 NULL
   })
   public project_id: string;
 
@@ -30,6 +31,7 @@ export class Artifact {
     type: 'varchar',
     length: 32,
     comment: '流程id',
+    nullable: false, // 设置为非 NULL
   })
   public flow_id: string;
 
@@ -38,6 +40,7 @@ export class Artifact {
     type: 'varchar',
     length: 32,
     comment: '用户id',
+    nullable: false, // 设置为非 NULL
   })
   public user_id: string;
 
@@ -46,6 +49,7 @@ export class Artifact {
     type: 'varchar',
     length: 32,
     comment: '文案id',
+    nullable: false, // 设置为非 NULL
   })
   public script_id: string;
 
@@ -54,6 +58,7 @@ export class Artifact {
     type: 'varchar',
     length: 32,
     comment: '章节id',
+    nullable: false, // 设置为非 NULL
   })
   public chapter_id: string;
 
@@ -61,6 +66,7 @@ export class Artifact {
   @Column({
     type: 'int',
     comment: '章节序号',
+    nullable: false, // 设置为非 NULL
   })
   public chapter_number: number;
 
@@ -68,17 +74,19 @@ export class Artifact {
   @Column({
     type: 'varchar',
     length: 20,
-    nullable: true,
+    nullable: true, // 允许为 NULL
     collation: 'utf8mb4_general_ci',
     comment: '样式',
+    default: null, // 默认值为 NULL
   })
-  public style: string;
+  public style: string | null; // 使用联合类型，允许为 null
 
   @ApiProperty({ type: Number, description: '总体状态' })
   @Column({
     type: 'int',
     default: 0,
     comment: '总体状态',
+    nullable: false, // 设置为非 NULL
   })
   public overall_status: number;
 
@@ -87,6 +95,7 @@ export class Artifact {
     type: 'int',
     default: 0,
     comment: '选图状态',
+    nullable: false, // 设置为非 NULL
   })
   public selection_status: number;
 
@@ -94,6 +103,7 @@ export class Artifact {
   @Column({
     type: 'longtext',
     comment: '已选图片信息',
+    nullable: true,
   })
   public selected_imgs: string;
 
@@ -101,6 +111,7 @@ export class Artifact {
   @Column({
     type: 'longtext',
     comment: '已保存图片信息',
+    nullable: true,
   })
   public saved_imgs: string;
 
@@ -108,6 +119,7 @@ export class Artifact {
   @Column({
     type: 'longtext',
     comment: '图片信息',
+    nullable: true,
   })
   public imgs_info: string;
 
@@ -115,7 +127,8 @@ export class Artifact {
   @Column({
     type: 'int',
     default: 1,
-    comment: '发布状态',
+    comment: '-1: deleted, 1: unpublished, 2: published',
+    nullable: true,
   })
   public publish_status: number;
 

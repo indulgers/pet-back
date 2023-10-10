@@ -59,3 +59,4 @@ export function guid(): string {
     return r.toString(16);
   });
 }
+

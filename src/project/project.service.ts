@@ -16,17 +16,10 @@ export class ProjectService {
   private readonly projectManager: EntityManager;
 
   async create(createProjectDto: CreateProjectDto) {
-    const NewProject = new Project();
-    NewProject.project_id = guid();
-    NewProject.user_id = createProjectDto.user_id;
-    NewProject.script_id = guid();
-    NewProject.style = createProjectDto.style;
-    NewProject.roles_info = createProjectDto.roles_info;
-    NewProject.cover_url = createProjectDto.cover_url;
-    NewProject.status = createProjectDto.status;
-    NewProject.access_control = createProjectDto.access_control;
+    const newProject = this.projectRepository.create(createProjectDto);
+    newProject.project_id = guid(); // 如果需要为新项目生成唯一标识，可以在这里设置
 
-    return await this.projectRepository.save(NewProject);
+    return await this.projectRepository.save(newProject);
   }
   findAll() {
     return this.projectRepository.find();
@@ -35,14 +28,14 @@ export class ProjectService {
   async findOne(id: string) {
     return await this.projectRepository.findOne({
       where: {
-        id: id, // 或者简写为 id，根据你的模型定义
+        id: id,
       },
     });
   }
   async findByUserId(user_id: string) {
     return await this.projectRepository.findOne({
       where: {
-        user_id: user_id, // 或者简写为 id，根据你的模型定义
+        user_id: user_id,
       },
     });
   }

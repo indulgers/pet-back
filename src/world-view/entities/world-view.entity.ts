@@ -3,17 +3,14 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn,
-} from 'typeorm';
+  PrimaryColumn, PrimaryGeneratedColumn
+} from "typeorm";
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('world_view')
 export class WorldView {
   @ApiProperty({ type: Number, description: 'id' })
-  @PrimaryColumn({
-    type: 'int',
-    comment: 'id',
-  })
+  @PrimaryGeneratedColumn()
   public id: number;
 
   @ApiProperty({ type: String, description: '文案id' })
@@ -21,6 +18,7 @@ export class WorldView {
     type: 'varchar',
     length: 32,
     comment: '文案id',
+    nullable: false, // 设置为非 NULL
   })
   public script_id: string;
 
@@ -29,6 +27,7 @@ export class WorldView {
     type: 'varchar',
     length: 20,
     comment: '人物，或者场景等',
+    nullable: false, // 设置为非 NULL
   })
   public type: string;
 
@@ -38,6 +37,7 @@ export class WorldView {
     length: 10,
     default: '',
     comment: '实体id',
+    nullable: false, // 设置为非 NULL
   })
   public entity_id: string;
 
@@ -45,39 +45,41 @@ export class WorldView {
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
+    nullable: true, // 允许为 NULL
     comment: '实体名称',
   })
-  public entity_name: string;
+  public entity_name: string | null; // 使用联合类型，允许为 null
 
   @ApiProperty({ type: String, description: '实体描述' })
   @Column({
     type: 'longtext',
     comment: '实体描述',
+    nullable: true,
   })
   public entity_desc: string;
 
-  @ApiProperty({ type: String, description: '演示链接' })
+  @ApiProperty({ type: String, description: '演示地址' })
   @Column({
     type: 'text',
-    nullable: true,
-    comment: '演示链接',
+    nullable: true, // 允许为 NULL
+    comment: '演示地址',
   })
-  public demo_url: string;
+  public demo_url: string | null; // 使用联合类型，允许为 null
 
   @ApiProperty({ type: String, description: 'Lora ID' })
   @Column({
     type: 'varchar',
     length: 64,
-    nullable: true,
+    nullable: true, // 允许为 NULL
   })
-  public lora_id: string;
+  public lora_id: string | null; // 使用联合类型，允许为 null
 
   @ApiProperty({ type: Number, description: '状态' })
   @Column({
     type: 'int',
     default: 0,
     comment: '状态',
+    nullable: false, // 设置为非 NULL
   })
   public status: number;
 
@@ -93,3 +95,4 @@ export class WorldView {
   })
   public update_time: Date;
 }
+

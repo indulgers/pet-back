@@ -21,6 +21,8 @@ import { Script } from './script/entities/script.entity';
 import { WorldView } from './world-view/entities/world-view.entity';
 import { RolesViews } from './role-views/entities/role-view.entity';
 import { RolesLora } from './role-rola/entities/role-rola.entity';
+import { ScriptTypeModule } from './script-type/script-type.module';
+import { ProjectTypeModule } from './project-type/project-type.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -65,6 +67,8 @@ import { RolesLora } from './role-rola/entities/role-rola.entity';
     WorldViewModule,
     RoleViewsModule,
     RoleRolaModule,
+    ScriptTypeModule,
+    ProjectTypeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

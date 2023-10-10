@@ -4,14 +4,14 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import * as crypto from 'crypto';
 import { ResultData } from '../common/utils/result';
 import { AppHttpCode } from '../common/enums/code.enum';
 import { JwtService } from '@nestjs/jwt';
 import { instanceToPlain } from 'class-transformer';
 import { RedisService } from '../redis/redis.service';
 import { guid } from '../common/utils/utils';
-import { UserDto } from './dto/get-user.dto';
+import { validPhone } from '../common/utils/validate';
+import { RedisService as RedisTokenService } from 'nestjs-redis';
 
 @Injectable()
 export class UserService {
@@ -23,6 +23,8 @@ export class UserService {
   @Inject(RedisService)
   private redisService: RedisService;
 
+  private readonly redisTokenService: RedisTokenService;
+
   @Inject(JwtService)
   private readonly jwtService: JwtService;
 
@@ -32,7 +34,7 @@ export class UserService {
   async sendVerificationCode(mobile: string): Promise<ResultData> {
     // 生成随机的六位验证码
 
-    if (!this.isPhoneNumberValid(mobile))
+    if (!validPhone(mobile))
       return ResultData.fail(
         AppHttpCode.USER_PHONE_NOT_FOUND,
         '非法的手机号格式',
@@ -118,27 +120,54 @@ export class UserService {
   }
 
   genToken(payload: { mobile: string }): {
-    Token: string;
+    access_token: string;
+    refresh_token: string;
   } {
-    const Token = this.jwtService.sign(payload, { expiresIn: '30m' });
-    this.logger.log(Token);
-    return { Token };
+    const accessPayload = { ...payload, tokenType: 'access' };
+    const refreshPayload = { ...payload, tokenType: 'refresh' };
+    const access_token = this.jwtService.sign(accessPayload, {
+      expiresIn: '30m',
+    });
+    const refresh_token = this.jwtService.sign(refreshPayload, {
+      expiresIn: '30d',
+    });
+    this.logger.log(access_token, refresh_token);
+    return { access_token, refresh_token };
   }
 
-  //校验手机号格式
-  isPhoneNumberValid(phoneNumber: string): boolean {
-    return this.phoneNumberRegex.test(phoneNumber);
-  }
-  /**
-   * 生成刷新 token
-   */
   async getUserInfo(mobile: string): Promise<User | null> {
-    // 在数据库中查找用户，你可以使用 userRepository 或者其他相关的方法
+    // 在数据库中查找用户，可以使用 userRepository 或者其他相关的方法
     const foundUser = await this.userRepository.findOneBy({ mobile });
     if (!foundUser) {
       return null; // 如果用户不存在，返回 null
     }
-    // 如果用户存在，你可以在这里处理返回的用户信息，例如过滤敏感信息等
+    // 如果用户存在，可以在这里处理返回的用户信息，例如过滤敏感信息等
+    return foundUser;
+  }
+  async findUserById(user_id: string): Promise<User | null> {
+    // 在数据库中查找用户，使用用户的 ID 进行查询
+    const foundUser = await this.userRepository.findOne({
+      where: [{ user_id }], // 将查询条件包装在数组中
+    });
+
+    if (!foundUser) {
+      return null; // 如果用户不存在，返回 null
+    }
+
+    // 如果用户存在，可以在这里处理返回的用户信息，例如过滤敏感信息等
+    return foundUser;
+  }
+  async findUserByMobile(mobile: string): Promise<User | null> {
+    // 在数据库中查找用户，使用用户的 ID 进行查询
+    const foundUser = await this.userRepository.findOne({
+      where: [{ mobile }], // 将查询条件包装在数组中
+    });
+
+    if (!foundUser) {
+      return null; // 如果用户不存在，返回 null
+    }
+
+    // 如果用户存在，可以在这里处理返回的用户信息，例如过滤敏感信息等
     return foundUser;
   }
 }
