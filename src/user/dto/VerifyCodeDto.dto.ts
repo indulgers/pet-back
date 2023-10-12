@@ -7,3 +7,8 @@ export class VerifyCodeData {
   @IsNotEmpty()
   mobile: string;
 }
+export class RefreshTokenData {
+  @IsString()
+  @IsNotEmpty()
+  refresh_token: string;
+}

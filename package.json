@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^7.1.12",
     "@nestjs/typeorm": "^9.0.1",
+    "axios": "^1.5.1",
     "bcryptjs": "^2.4.3",
     "cache-manager": "^5.2.4",
     "cache-manager-redis-store": "^3.0.1",

@@ -15,6 +15,7 @@ import {
   Param,
   UnauthorizedException,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -23,9 +24,10 @@ import { ApiOperation } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { ResultData } from '../common/utils/result';
 import { CreateTokenDto } from './dto/create-token.dto';
-import { VerifyCodeData } from './dto/VerifyCodeDto.dto';
+import {  VerifyCodeData } from './dto/VerifyCodeDto.dto';
 import { ApiResult } from '../common/decorators/api-result.decorator';
 import { AllowAnon } from '../common/decorators/allow-anon.decorator';
+import { LoginGuard } from '../login.guard';
 
 @Controller('user')
 export class UserController {
@@ -65,6 +67,7 @@ export class UserController {
   }
 
   @Get('getUserInfo/:mobile')
+  @UseGuards(LoginGuard)
   async getUserInfo(@Param('mobile') mobile: string) {
     const userInfo = await this.userService.getUserInfo(mobile);
 
@@ -75,15 +78,19 @@ export class UserController {
     return userInfo; // 返回用户信息
   }
 
-  @Get('refresh')
-  async refresh(@Query('refresh_token') refreshToken: string) {
+  @Get('refresh/:refresh_token')
+  async refresh(@Param('refresh_token') refresh_token: string) {
+    this.logger.log('refreshToken', refresh_token);
     try {
-      const data = this.jwtService.verify(refreshToken);
+      const data = this.jwtService.verify(refresh_token);
 
-      const user = await this.userService.findUserById(data.userId);
+      this.logger.log('data', data);
+
+      const user = await this.userService.findUserByMobile(data.mobile);
 
       const Token = this.userService.genToken({ mobile: user.mobile });
 
+      this.logger.log('Token', Token);
       return {
         Token,
       };
