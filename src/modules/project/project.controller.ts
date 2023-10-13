@@ -6,37 +6,37 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { LoginGuard } from '../../login.guard';
+import { dynamicQueryDto } from './dto/dynamicQuery.dto';
 
 @Controller('project')
 export class ProjectController {
   constructor(private readonly ProjectService: ProjectService) {}
 
-  @Post()
+  @Post('/create')
   create(@Body() createProjectDto: CreateProjectDto) {
     return this.ProjectService.create(createProjectDto);
   }
 
-  @Get()
-  findAll() {
-    return this.ProjectService.findAll();
+  @Get('/findDynamic')
+  findDynamic(@Body() queryDto: dynamicQueryDto) {
+    return this.ProjectService.dynamicQuery(queryDto);
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ProjectService.findOne(id);
-  }
-
-  @Patch(':id')
+  @Patch('/update/:id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.ProjectService.update(+id, updateProjectDto);
+    return this.ProjectService.update(id, updateProjectDto);
   }
-
-  @Delete(':id')
+  @Get('/getProjectByScript')
+  async findAllProjectsWithScripts() {
+    return this.ProjectService.findAllProjectsWithScripts();
+  }
+  @Delete('/delete/:id')
   remove(@Param('id') id: string) {
-    return this.ProjectService.remove(+id);
+    return this.ProjectService.remove(id);
   }
 }

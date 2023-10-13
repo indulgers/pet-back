@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryColumn,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Project } from '../../project/entities/project.entity';
 
 @Entity('script')
 export class Script {
@@ -15,6 +17,7 @@ export class Script {
     type: 'varchar',
     length: 32,
     comment: 'id',
+    default: '',
   })
   public id: string;
 
@@ -23,7 +26,7 @@ export class Script {
     type: 'varchar',
     length: 32,
     comment: '文案id',
-    nullable: false, // 设置为非 NULL
+    default: '',
   })
   public script_id: string;
 
@@ -32,7 +35,7 @@ export class Script {
     type: 'varchar',
     length: 64,
     comment: '文案名称',
-    nullable: false, // 设置为非 NULL
+    default: '', // 默认值为空字符串
   })
   public script_name: string;
 
@@ -41,7 +44,7 @@ export class Script {
     type: 'varchar',
     length: 255,
     comment: '文案URL',
-    nullable: false, // 设置为非 NULL
+    default: '', // 默认值为空字符串
   })
   public script_url: string;
 
@@ -134,4 +137,7 @@ export class Script {
     comment: '更新时间',
   })
   public update_time: Date;
+
+  @OneToMany(() => Project, (project) => project.script_id)
+  public projects: Project[];
 }

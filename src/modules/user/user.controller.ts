@@ -19,15 +19,14 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { User } from './entities/user.entity';
-import { ResultData } from '../common/utils/result';
+import { ResultData } from '../../common/utils/result';
 import { CreateTokenDto } from './dto/create-token.dto';
-import {  VerifyCodeData } from './dto/VerifyCodeDto.dto';
-import { ApiResult } from '../common/decorators/api-result.decorator';
-import { AllowAnon } from '../common/decorators/allow-anon.decorator';
-import { LoginGuard } from '../login.guard';
+import { VerifyCodeData } from './dto/VerifyCodeDto.dto';
+import { ApiResult } from '../../common/decorators/api-result.decorator';
+import { AllowAnon } from '../../common/decorators/allow-anon.decorator';
+import { LoginGuard } from '../../login.guard';
 
 @Controller('user')
 export class UserController {

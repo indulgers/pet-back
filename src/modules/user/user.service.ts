@@ -4,15 +4,14 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { ResultData } from '../common/utils/result';
-import { AppHttpCode } from '../common/enums/code.enum';
+import { ResultData } from '../../common/utils/result';
+import { AppHttpCode } from '../../common/enums/code.enum';
 import { JwtService } from '@nestjs/jwt';
 import { instanceToPlain } from 'class-transformer';
-import { RedisService } from '../redis/redis.service';
-import { guid } from '../common/utils/utils';
-import { validPhone } from '../common/utils/validate';
+import { RedisService } from '../../redis/redis.service';
+import { guid } from '../../common/utils/utils';
+import { validPhone } from '../../common/utils/validate';
 import { RedisService as RedisTokenService } from 'nestjs-redis';
-
 @Injectable()
 export class UserService {
   private logger = new Logger();
@@ -27,9 +26,7 @@ export class UserService {
 
   @Inject(JwtService)
   private readonly jwtService: JwtService;
-
-  private readonly phoneNumberRegex = /^1[3456789]\d{9}$/;
-  // 模拟存储验证码的对象，实际应该存储在数据库或缓存中
+  // 模拟存储验证码的对象，实际存储在数据库或缓存中
   private verificationCodes: { [mobile: string]: string } = {};
   async sendVerificationCode(mobile: string): Promise<ResultData> {
     // 生成随机的六位验证码
@@ -109,6 +106,7 @@ export class UserService {
     newUser.nickname = user.nickname;
     newUser.mobile = user.mobile;
     newUser.user_id = guid();
+    newUser.id = guid();
     this.logger.log(newUser.nickname);
     try {
       await this.userRepository.save(newUser);

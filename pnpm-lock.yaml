@@ -53,6 +53,9 @@ dependencies:
   class-validator:
     specifier: ^0.14.0
     version: 0.14.0
+  crc32:
+    specifier: ^0.2.2
+    version: 0.2.2
   dayjs:
     specifier: ^1.11.8
     version: 1.11.8
@@ -2523,6 +2526,12 @@ packages:
       path-type: 4.0.0
       yaml: 1.10.2
     dev: true
+
+  /crc32@0.2.2:
+    resolution: {integrity: sha512-PFZEGbDUeoNbL2GHIEpJRQGheXReDody/9axKTxhXtQqIL443wnNigtVZO9iuCIMPApKZRv7k2xr8euXHqNxQQ==}
+    engines: {node: '>= 0.4.0'}
+    hasBin: true
+    dev: false
 
   /create-jest@29.7.0(@types/node@18.15.11)(ts-node@10.0.0):
     resolution: {integrity: sha512-Adz2bdH0Vq3F53KEMJOoftQFutWCukm6J24wbPWRO4k1kMY7gS7ds/uoJkNuV8wDCtWWnuwGcJwpWcih+zEW1Q==}

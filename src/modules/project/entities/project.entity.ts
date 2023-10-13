@@ -1,16 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Script } from '../../script/entities/script.entity';
 
 @Entity('project')
 export class Project {
   @ApiProperty({ type: String, description: 'id' })
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({
+    type: 'varchar',
+    length: 32,
+    comment: 'id',
+  })
   public id: string;
 
   @ApiProperty({ type: String, description: '项目id' })
   @Column({
     type: 'varchar',
-    length: 32,
     comment: '项目id',
     nullable: false, // 设置为非 NULL
     default: '', // 默认值为空字符串
@@ -30,10 +42,8 @@ export class Project {
   @ApiProperty({ type: String, description: '文案id' })
   @Column({
     type: 'varchar',
-    length: 32,
     comment: '文案id',
-    nullable: false, // 设置为非 NULL
-    default: '0', // 默认值为字符串 '0'
+    nullable: false,
   })
   public script_id: string;
 

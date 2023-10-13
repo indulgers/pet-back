@@ -1,4 +1,5 @@
 import { RedisKeyPrefix } from '../enums/redis-key-prefix.enum';
+import { crc32 } from 'crc32';
 /**
  * 获取 模块前缀与唯一标识 整合后的 redis key
  * @param moduleKeyPrefix 模块前缀
@@ -54,8 +55,7 @@ export function objAttrToCamelOrUnderline(
 }
 //生成uuid
 export function guid(): string {
-  return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/x/g, function (c) {
-    const r = (Math.random() * 16) | 0;
-    return r.toString(16);
+  return '12345678901234567890123456789012'.replace(/1/g, function () {
+    return Math.floor(Math.random() * 10).toString();
   });
 }
