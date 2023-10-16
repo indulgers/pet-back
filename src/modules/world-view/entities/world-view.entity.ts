@@ -3,24 +3,24 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn, PrimaryGeneratedColumn
-} from "typeorm";
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Script } from '../../script/entities/script.entity';
 
 @Entity('world_view')
 export class WorldView {
-  @ApiProperty({ type: Number, description: 'id' })
-  @PrimaryGeneratedColumn()
-  public id: number;
-
-  @ApiProperty({ type: String, description: '文案id' })
-  @Column({
+  @ApiProperty({ type: String, description: 'id' })
+  @PrimaryColumn({
     type: 'varchar',
     length: 32,
-    comment: '文案id',
-    nullable: false, // 设置为非 NULL
+    comment: 'id',
+    default: '',
   })
-  public script_id: string;
+  public id: string;
 
   @ApiProperty({ type: String, description: '类型' })
   @Column({
@@ -94,5 +94,10 @@ export class WorldView {
     comment: '更新时间',
   })
   public update_time: Date;
-}
 
+  @ManyToOne(() => Script, (script) => script.worldviews, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'script_id' })
+  public script: Script;
+}

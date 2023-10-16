@@ -10,6 +10,7 @@ import {
 import { ScriptService } from './script.service';
 import { CreateScriptDto } from './dto/create-script.dto';
 import { UpdateScriptDto } from './dto/update-script.dto';
+import { dynamicQueryDto } from '../project/dto/dynamicQuery.dto';
 
 @Controller('script')
 export class ScriptController {
@@ -20,16 +21,15 @@ export class ScriptController {
     return this.scriptService.create(createScriptDto);
   }
 
-  @Get('/findAll')
-  findAll() {
-    return this.scriptService.findAll();
+  @Get('/find')
+  find(@Body() queryDto: dynamicQueryDto) {
+    return this.scriptService.dynamicSearch(queryDto);
   }
 
-  @Get('/findByUser/:user_id')
-  findByUser(@Param('user_id') user_id: string) {
-    return this.scriptService.findByUserId(user_id);
+  @Get('/findElastic/')
+  findElastic(@Body() queryDto: dynamicQueryDto) {
+    return this.scriptService.dynamicElasticSearch(queryDto);
   }
-
   @Patch('/update/:script_id')
   update(
     @Param('script_id') script_id: string,

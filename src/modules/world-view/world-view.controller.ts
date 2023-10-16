@@ -1,34 +1,58 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Put,
+  Logger,
+} from '@nestjs/common';
 import { WorldViewService } from './world-view.service';
 import { CreateWorldViewDto } from './dto/create-world-view.dto';
+import { WorldView } from './entities/world-view.entity';
+import {
+  Crud,
+  CrudController,
+  CrudRequest,
+  Override,
+  ParsedBody,
+  ParsedRequest,
+} from '@nestjsx/crud';
+import { ApiTags } from '@nestjs/swagger';
 import { UpdateWorldViewDto } from './dto/update-world-view.dto';
-
+@Crud({
+  model: {
+    type: WorldView,
+  },
+  params: {
+    id: {
+      field: 'id',
+      type: 'string',
+      primary: true,
+    },
+  },
+})
+@ApiTags('WorldView')
 @Controller('world-view')
-export class WorldViewController {
-  constructor(private readonly worldViewService: WorldViewService) {}
+export class WorldViewController implements CrudController<WorldView> {
+  constructor(public readonly service: WorldViewService) {}
 
-  @Post()
+  private logger = new Logger();
+  @Post('/create')
   create(@Body() createWorldViewDto: CreateWorldViewDto) {
-    return this.worldViewService.create(createWorldViewDto);
+    return this.service.create(createWorldViewDto);
   }
 
-  @Get()
-  findAll() {
-    return this.worldViewService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.worldViewService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWorldViewDto: UpdateWorldViewDto) {
-    return this.worldViewService.update(+id, updateWorldViewDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.worldViewService.remove(+id);
+  @Put('/update/:id')
+  update(
+    @ParsedRequest() req: CrudRequest,
+    @Body() dto: UpdateWorldViewDto, // 这里的 dto 是前端发送的更新数据
+  ) {
+    this.logger.log('updateOneBase');
+    this.logger.log(dto);
+    return this.service.updateOne(req, dto);
   }
 }

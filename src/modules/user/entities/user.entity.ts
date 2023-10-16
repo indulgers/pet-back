@@ -2,11 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Script } from '../../script/entities/script.entity';
+import { Project } from '../../project/entities/project.entity';
+import { Artifact } from '../../artifact/entities/artifact.entity';
 
 @Entity('user')
 export class User {
@@ -74,4 +78,22 @@ export class User {
     comment: '更新时间',
   })
   updateTime: Date;
+
+  @OneToMany(() => Script, (script) => script.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public scripts: Script[];
+
+  @OneToMany(() => Project, (project) => project.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public projects: Project[];
+
+  @OneToMany(() => Artifact, (artifact) => artifact.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public artifacts: Artifact[];
 }

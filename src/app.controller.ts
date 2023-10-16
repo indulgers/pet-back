@@ -1,25 +1,28 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, UseGuards } from "@nestjs/common";
 import { AppService } from './app.service';
 import { LoginGuard } from './login.guard';
+import { UseLanguageInterceptor } from './intercepter/language-intercepter';
+import { I18n, I18nContext, I18nService } from "nestjs-i18n";
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
+  constructor(private readonly i18n: I18nService) {}
+  private logger = new Logger('AppController');
   @Get('aaa')
-  @UseGuards(LoginGuard)
+  @UseLanguageInterceptor()
   aaa() {
     return 'aaa';
   }
 
   @Get('bbb')
-  @UseGuards(LoginGuard)
   bbb() {
     return 'bbb';
   }
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get()
+  async getHello(@I18n() i18n: I18nContext) {
+
+    return i18n.t('test.hello');
   }
 }

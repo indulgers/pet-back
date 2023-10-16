@@ -23,9 +23,9 @@ export class ProjectController {
     return this.ProjectService.create(createProjectDto);
   }
 
-  @Get('/findDynamic')
+  @Get('/find')
   findDynamic(@Body() queryDto: dynamicQueryDto) {
-    return this.ProjectService.dynamicQuery(queryDto);
+    return this.ProjectService.dynamicSearch(queryDto);
   }
   @Patch('/update/:id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {

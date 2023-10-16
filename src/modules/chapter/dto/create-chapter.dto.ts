@@ -6,14 +6,10 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { DeepPartial } from 'typeorm';
+import { Script } from '../../script/entities/script.entity';
 
 export class CreateChapterDto {
-  @ApiProperty({ description: '文案id' })
-  @IsNotEmpty({ message: '文案id不能为空' })
-  @IsString({ message: '文案id必须为字符串' })
-  @MaxLength(64, { message: '文案id最长为64字符' })
-  script_id: string;
-
   @ApiProperty({ description: '章节序号' })
   @IsInt({ message: '章节序号必须为整数' })
   @IsOptional()
@@ -52,4 +48,6 @@ export class CreateChapterDto {
   @ApiProperty({ description: '更新时间' })
   @IsOptional()
   update_time?: Date;
+
+  script: DeepPartial<Script>;
 }

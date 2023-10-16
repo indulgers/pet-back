@@ -6,9 +6,15 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Project } from '../../project/entities/project.entity';
+import { Chapter } from '../../chapter/entities/chapter.entity';
+import { Artifact } from '../../artifact/entities/artifact.entity';
+import { User } from '../../user/entities/user.entity';
+import { WorldView } from '../../world-view/entities/world-view.entity';
 
 @Entity('script')
 export class Script {
@@ -47,15 +53,6 @@ export class Script {
     default: '', // 默认值为空字符串
   })
   public script_url: string;
-
-  @ApiProperty({ type: String, description: '用户id' })
-  @Column({
-    type: 'varchar',
-    length: 32,
-    comment: '用户id',
-    nullable: false, // 设置为非 NULL
-  })
-  public user_id: string;
 
   @ApiProperty({ type: String, description: '版权信息' })
   @Column({
@@ -138,6 +135,31 @@ export class Script {
   })
   public update_time: Date;
 
-  @OneToMany(() => Project, (project) => project.script_id)
+  @OneToMany(() => Project, (project) => project.script, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   public projects: Project[];
+
+  @OneToMany(() => Chapter, (chapter) => chapter.script, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public chapters: Chapter[];
+
+  @OneToMany(() => Artifact, (artifact) => artifact.script, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public artifacts: Artifact[];
+
+  @OneToMany(() => WorldView, (worldview) => worldview.script, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public worldviews: WorldView[];
+
+  @ManyToOne(() => User, (user) => user.scripts, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  public user: User;
 }

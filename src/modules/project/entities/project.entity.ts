@@ -4,11 +4,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
+  ManyToOne, OneToMany,
   PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { Script } from '../../script/entities/script.entity';
+import { Artifact } from "../../artifact/entities/artifact.entity";
+import { Chapter } from "../../chapter/entities/chapter.entity";
+import { User } from "../../user/entities/user.entity";
 
 @Entity('project')
 export class Project {
@@ -17,6 +20,7 @@ export class Project {
     type: 'varchar',
     length: 32,
     comment: 'id',
+    default: '',
   })
   public id: string;
 
@@ -38,14 +42,6 @@ export class Project {
     default: '', // 默认值为空字符串
   })
   public user_id: string;
-
-  @ApiProperty({ type: String, description: '文案id' })
-  @Column({
-    type: 'varchar',
-    comment: '文案id',
-    nullable: false,
-  })
-  public script_id: string;
 
   @ApiProperty({ type: String, description: '样式' })
   @Column({
@@ -103,4 +99,18 @@ export class Project {
     comment: '更新时间',
   })
   public update_time: Date;
+
+  @ManyToOne(() => Script, (script) => script.projects, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'script_id' })
+  public script: Script;
+
+  @ManyToOne(() => User, (user) => user.projects, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  public user: User;
+
+  @OneToMany(() => Artifact, (artifact) => artifact.project, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public artifacts: Artifact[];
 }

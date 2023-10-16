@@ -5,24 +5,27 @@ import {
   UpdateDateColumn,
   PrimaryColumn,
   PrimaryGeneratedColumn,
-} from 'typeorm';
+  ManyToOne,
+  JoinColumn, OneToMany
+} from "typeorm";
 import { ApiProperty } from '@nestjs/swagger';
+import { Script } from '../../script/entities/script.entity';
+import { Artifact } from "../../artifact/entities/artifact.entity";
 
 @Entity('chapter')
 export class Chapter {
   @ApiProperty({ type: String, description: 'id' })
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({
+    type: 'varchar',
+    length: 32,
+    comment: 'id',
+    default: '',
+  })
   public id: string;
 
-  @ApiProperty({ type: String, description: '文案id' })
-  @Column({
-    type: 'varchar',
-    length: 64,
-    comment: '文案id',
-    nullable: false, // 设置为非 NULL
-    default: '', // 默认值为空字符串
-  })
-  public script_id: string;
+  @ManyToOne(() => Script, (script) => script.chapters, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'script_id' })
+  script: Script;
 
   @ApiProperty({ type: Number, description: '章节序号' })
   @Column({
@@ -87,4 +90,10 @@ export class Chapter {
     comment: '更新时间',
   })
   public update_time: Date;
+
+  @OneToMany(() => Artifact, (artifact) => artifact.chapter, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public artifacts: Artifact[];
 }

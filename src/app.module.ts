@@ -23,6 +23,13 @@ import { RolesViews } from './modules/role-views/entities/role-view.entity';
 import { RolesLora } from './modules/role-rola/entities/role-rola.entity';
 import { ScriptTypeModule } from './modules/script-type/script-type.module';
 import { ProjectTypeModule } from './modules/project-type/project-type.module';
+import {
+  AcceptLanguageResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
+import * as path from 'path';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -69,6 +76,18 @@ import { ProjectTypeModule } from './modules/project-type/project-type.module';
     RoleRolaModule,
     ScriptTypeModule,
     ProjectTypeModule,
+    I18nModule.forRoot({
+      fallbackLanguage: 'zh',
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+        new HeaderResolver(['x-lang']),
+      ],
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

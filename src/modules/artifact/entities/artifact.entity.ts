@@ -3,9 +3,13 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn,
-} from 'typeorm';
+  PrimaryColumn, ManyToOne, JoinColumn
+} from "typeorm";
 import { ApiProperty } from '@nestjs/swagger';
+import { Project } from "../../project/entities/project.entity";
+import { Script } from "../../script/entities/script.entity";
+import { Chapter } from "../../chapter/entities/chapter.entity";
+import { User } from "../../user/entities/user.entity";
 
 @Entity('artifact')
 export class Artifact {
@@ -14,17 +18,10 @@ export class Artifact {
     type: 'varchar',
     length: 32,
     comment: 'id',
+    default: '',
   })
   public id: string;
 
-  @ApiProperty({ type: String, description: '项目id' })
-  @Column({
-    type: 'varchar',
-    length: 32,
-    comment: '项目id',
-    nullable: false, // 设置为非 NULL
-  })
-  public project_id: string;
 
   @ApiProperty({ type: String, description: '流程id' })
   @Column({
@@ -41,6 +38,7 @@ export class Artifact {
     length: 32,
     comment: '用户id',
     nullable: false, // 设置为非 NULL
+    unique: true, // 唯一约束
   })
   public user_id: string;
 
@@ -143,4 +141,20 @@ export class Artifact {
     comment: '更新时间',
   })
   public update_time: Date;
+
+  @ManyToOne(() => Project, (project) => project.artifacts)
+  @JoinColumn({ name: 'project_id' })
+  public project: Project;
+
+  @ManyToOne(() => Script, (script) => script.artifacts)
+  @JoinColumn({ name: 'script_id' })
+  public script: Script;
+
+  @ManyToOne(() => Chapter, (chapter) => chapter.artifacts)
+  @JoinColumn({ name: 'chapter_id' })
+  public chapter: Chapter;
+
+  @ManyToOne(() => User, (user) => user.artifacts)
+  @JoinColumn({ name: 'user_id' })
+  public user: User;
 }

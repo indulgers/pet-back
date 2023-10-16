@@ -1,4 +1,7 @@
 import { IsString, IsNotEmpty, IsInt } from 'class-validator';
+import { DeepPartial } from 'typeorm';
+import { Script } from '../../script/entities/script.entity';
+import { User } from '../../user/entities/user.entity';
 
 export class CreateProjectDto {
   @IsString()
@@ -18,4 +21,8 @@ export class CreateProjectDto {
 
   @IsInt()
   public access_control: number;
+
+  script: DeepPartial<Script>;
+
+  user: DeepPartial<User>;
 }
