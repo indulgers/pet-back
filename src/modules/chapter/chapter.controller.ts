@@ -13,29 +13,23 @@ import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
 import { dynamicQueryDto } from '../project/dto/dynamicQuery.dto';
 import { LoginGuard } from '../../login.guard';
-
+import { ApiTags } from '@nestjs/swagger';
+import { CrudController } from '../shared/crud.controller';
+import { Chapter } from './entities/chapter.entity';
+@ApiTags('Chapter')
 @Controller('chapter')
-@UseGuards(LoginGuard)
-export class ChapterController {
-  constructor(private readonly chapterService: ChapterService) {}
+export class ChapterController extends CrudController<Chapter> {
+  constructor(private readonly chapterService: ChapterService) {
+    super(chapterService);
+  }
 
   @Post('/create')
-  create(@Body() createChapterDto: CreateChapterDto) {
+  createChapter(@Body() createChapterDto: CreateChapterDto) {
     return this.chapterService.create(createChapterDto);
   }
 
   @Get('/find')
   find(@Body() queryDto: dynamicQueryDto) {
     return this.chapterService.dynamicSearch(queryDto);
-  }
-
-  @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() updateChapterDto: UpdateChapterDto) {
-    return this.chapterService.update(+id, updateChapterDto);
-  }
-
-  @Delete('/delete/:id')
-  remove(@Param('id') id: string) {
-    return this.chapterService.remove(+id);
   }
 }

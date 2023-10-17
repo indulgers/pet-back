@@ -23,6 +23,4 @@ export class CreateProjectDto {
   public access_control: number;
 
   script: DeepPartial<Script>;
-
-  user: DeepPartial<User>;
 }

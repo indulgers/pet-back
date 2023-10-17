@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ArtifactService } from './artifact.service';
 import { CreateArtifactDto } from './dto/create-artifact.dto';
-import { UpdateArtifactDto } from './dto/update-artifact.dto';
-
+import { Artifact } from './entities/artifact.entity';
+import { ApiTags } from '@nestjs/swagger';
+import { CrudController } from '../shared/crud.controller';
+@ApiTags('Artifact')
 @Controller('artifact')
-export class ArtifactController {
-  constructor(private readonly artifactService: ArtifactService) {}
+export class ArtifactController extends CrudController<Artifact> {
+  constructor(private readonly artifactService: ArtifactService) {
+    super(artifactService);
+  }
 
   @Post()
-  create(@Body() createArtifactDto: CreateArtifactDto) {
+  createArtifact(@Body() createArtifactDto: CreateArtifactDto) {
     return this.artifactService.create(createArtifactDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.artifactService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.artifactService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArtifactDto: UpdateArtifactDto) {
-    return this.artifactService.update(+id, updateArtifactDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.artifactService.remove(+id);
   }
 }

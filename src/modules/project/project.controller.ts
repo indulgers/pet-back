@@ -13,13 +13,17 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { LoginGuard } from '../../login.guard';
 import { dynamicQueryDto } from './dto/dynamicQuery.dto';
+import { CrudController } from '../shared/crud.controller';
+import { Project } from './entities/project.entity';
 
 @Controller('project')
-export class ProjectController {
-  constructor(private readonly ProjectService: ProjectService) {}
+export class ProjectController extends CrudController<Project> {
+  constructor(private readonly ProjectService: ProjectService) {
+    super(ProjectService);
+  }
 
   @Post('/create')
-  create(@Body() createProjectDto: CreateProjectDto) {
+  createProject(@Body() createProjectDto: CreateProjectDto) {
     return this.ProjectService.create(createProjectDto);
   }
 

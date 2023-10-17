@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from "@nestjs/common";
+import { Injectable, UseGuards } from '@nestjs/common';
 import { CreateChapterDto } from './dto/create-chapter.dto';
 import { UpdateChapterDto } from './dto/update-chapter.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,9 +8,14 @@ import { guid } from '../../common/utils/utils';
 import { Script } from '../script/entities/script.entity';
 import { dynamicQueryDto } from '../project/dto/dynamicQuery.dto';
 import { LoginGuard } from '../../login.guard';
+import { CrudService } from '../shared/crud.service';
 
 @Injectable()
-export class ChapterService {
+export class ChapterService extends CrudService<Chapter> {
+  constructor(@InjectRepository(Chapter) repo) {
+    super(repo);
+  }
+
   @InjectRepository(Chapter)
   private readonly chapterRepository: Repository<Chapter>;
 
@@ -28,7 +33,7 @@ export class ChapterService {
     const newChapter = this.chapterRepository.create(createChapterDto);
     newChapter.id = guid();
     newChapter.script = script;
-    return await this.chapterRepository.save(newChapter);
+    return super.create(newChapter);
   }
 
   async dynamicSearch(queryDto: dynamicQueryDto): Promise<Chapter[]> {
@@ -53,13 +58,5 @@ export class ChapterService {
     }
 
     return await queryBuilder.getMany();
-  }
-
-  update(id: number, updateChapterDto: UpdateChapterDto) {
-    return this.chapterRepository.update(id, updateChapterDto);
-  }
-
-  remove(id: number) {
-    return this.chapterRepository.delete(id);
   }
 }

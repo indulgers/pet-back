@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateScriptDto } from './dto/create-script.dto';
 import { UpdateScriptDto } from './dto/update-script.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
@@ -6,12 +6,16 @@ import { EntityManager, Repository } from 'typeorm';
 import { Script } from './entities/script.entity';
 import { guid } from '../../common/utils/utils';
 import { dynamicQueryDto } from '../project/dto/dynamicQuery.dto';
-import { Project } from '../project/entities/project.entity';
-import { Chapter } from '../chapter/entities/chapter.entity';
 import { User } from '../user/entities/user.entity';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { MultiFieldQueryDto } from './dto/multifield.dto';
+import { CrudService } from '../shared/crud.service';
 
 @Injectable()
-export class ScriptService {
+export class ScriptService extends CrudService<Script> {
+  constructor(@InjectRepository(Script) repo) {
+    super(repo);
+  }
   @InjectRepository(Script)
   private readonly scriptRepository: Repository<Script>;
 
@@ -20,7 +24,6 @@ export class ScriptService {
 
   @InjectRepository(User)
   private readonly userManager: Repository<User>;
-
   async create(createScriptDto: CreateScriptDto) {
     const user = await this.userManager.findOne({
       where: { user_id: createScriptDto.user.user_id },
@@ -33,12 +36,13 @@ export class ScriptService {
     const newScript = this.scriptRepository.create(createScriptDto);
     newScript.script_id = guid(); // 如果需要为新项目生成唯一标识，可以在这里设置
     newScript.id = guid();
+    newScript.user = user;
     if (newScript.projects) {
       newScript.projects.forEach((project) => {
         project.id = guid();
       });
     }
-    return await this.scriptRepository.save(newScript);
+    return super.create(newScript);
   }
   async dynamicSearch(queryDto: dynamicQueryDto): Promise<Script[]> {
     const queryBuilder = this.scriptRepository.createQueryBuilder('script');
@@ -63,39 +67,26 @@ export class ScriptService {
 
     return await queryBuilder.getMany();
   }
-  async update(script_id: string, updateScriptDto: UpdateScriptDto) {
-    const Script = await this.scriptRepository.findOne({
-      where: {
-        script_id: script_id,
-      },
-    });
-    if (!Script) {
-      // 处理找不到项目的情况，可以抛出异常或返回相应的错误信息
-      throw new NotFoundException(`Script with id ${script_id} not found`);
+
+  async findWithMultipleFields(
+    queryDto: MultiFieldQueryDto,
+  ): Promise<Script[]> {
+    const { script_name, nickname } = queryDto;
+
+    const queryBuilder = this.scriptRepository
+      .createQueryBuilder('script')
+      .leftJoinAndSelect('script.user', 'user');
+
+    if (script_name) {
+      queryBuilder.andWhere('script.script_name = :script_name', {
+        script_name,
+      });
     }
 
-    // 更新项目的属性
-    Object.assign(Script, updateScriptDto);
-
-    // 保存更新后的项目
-    return await this.scriptRepository.save(Script);
-  }
-
-  async remove(id: string) {
-    const Script = await this.scriptRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-    if (!Script) {
-      // 处理找不到项目的情况，可以抛出异常或返回相应的错误信息
-      throw new NotFoundException(`Script with id ${id} not found`);
+    if (nickname) {
+      queryBuilder.andWhere('user.nickname = :nickname', { nickname });
     }
 
-    // 删除项目
-    await this.scriptRepository.remove(Script);
-
-    // 返回删除成功的消息或其他信息
-    return `Script with id ${id} removed successfully`;
+    return queryBuilder.getMany();
   }
 }

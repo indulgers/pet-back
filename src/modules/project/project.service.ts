@@ -9,8 +9,12 @@ import { plainToInstance } from 'class-transformer';
 import { guid } from '../../common/utils/utils';
 import { dynamicQueryDto } from './dto/dynamicQuery.dto';
 import { Script } from '../script/entities/script.entity';
+import { CrudService } from "../shared/crud.service";
 @Injectable()
-export class ProjectService {
+export class ProjectService extends CrudService<Project>{
+  constructor(@InjectRepository(Project) repo) {
+    super(repo);
+  }
   @InjectRepository(Project)
   private readonly projectRepository: Repository<Project>;
 
@@ -35,9 +39,8 @@ export class ProjectService {
     newProject.id = guid();
     // 将找到的 Script 对象与新的 Project 对象关联
     newProject.script = script;
-
-    this.logger.log(newProject);
-    return await this.projectRepository.save(newProject);
+    // 保存新的 Project 对象
+    return super.create(newProject);
   }
 
   async findAllProjectsWithScripts(): Promise<Project[]> {
@@ -83,19 +86,4 @@ export class ProjectService {
     return await queryBuilder.getMany();
   }
 
-  async remove(project_id: string) {
-    const project = await this.projectRepository.findOne({
-      where: {
-        project_id: project_id,
-      },
-    });
-    if (!project) {
-      // 处理找不到项目的情况，可以抛出异常或返回相应的错误信息
-      throw new NotFoundException(`Project with id ${project_id} not found`);
-    }
-    // 删除项目
-    await this.projectRepository.remove(project);
-    // 返回删除成功的消息或其他信息
-    return `Project with id ${project_id} removed successfully`;
-  }
 }

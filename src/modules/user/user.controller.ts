@@ -38,7 +38,6 @@ export class UserController {
   @Post('login')
   @ApiOperation({ summary: '登录' })
   @ApiResult(CreateTokenDto)
-  @AllowAnon()
   async login(@Body() user: LoginUserDto): Promise<ResultData> {
     return await this.userService.login(user);
   }
@@ -46,7 +45,6 @@ export class UserController {
   @Post('register')
   @ApiOperation({ summary: '用户注册' })
   @ApiResult(RegisterUserDto)
-  @AllowAnon()
   async register(@Body() registerUser: RegisterUserDto) {
     this.logger.log('registerUser', registerUser);
     return await this.userService.register(registerUser);

@@ -30,6 +30,8 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import * as path from 'path';
+import { ScriptType } from "./modules/script-type/entities/script-type.entity";
+import { ProjectStyle } from "./modules/project-type/entities/project-type.entity";
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -50,6 +52,8 @@ import * as path from 'path';
         WorldView,
         RolesViews,
         RolesLora,
+        ScriptType,
+        ProjectStyle,
       ],
       poolSize: 10,
       connectorPackage: 'mysql2',
