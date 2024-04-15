@@ -7,22 +7,11 @@ import { User } from './modules/user/entities/user.entity';
 import { UserModule } from './modules/user/user.module';
 import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
-import { ArtifactModule } from './modules/artifact/artifact.module';
-import { ChapterModule } from './modules/chapter/chapter.module';
-import { ProjectModule } from './modules/project/project.module';
-import { ScriptModule } from './modules/script/script.module';
-import { RoleRolaModule } from './modules/role-rola/role-rola.module';
-import { RoleViewsModule } from './modules/role-views/role-views.module';
-import { WorldViewModule } from './modules/world-view/world-view.module';
-import { Project } from './modules/project/entities/project.entity';
-import { Artifact } from './modules/artifact/entities/artifact.entity';
-import { Chapter } from './modules/chapter/entities/chapter.entity';
-import { Script } from './modules/script/entities/script.entity';
-import { WorldView } from './modules/world-view/entities/world-view.entity';
-import { RolesViews } from './modules/role-views/entities/role-view.entity';
-import { RolesLora } from './modules/role-rola/entities/role-rola.entity';
-import { ScriptTypeModule } from './modules/script-type/script-type.module';
-import { ProjectTypeModule } from './modules/project-type/project-type.module';
+import { PetModule } from './modules/pet/pet.module';
+import { DoctorModule } from './modules/doctor/doctor.module';
+import { OperationModule } from './modules/operation/operation.module';
+import { Pet } from './modules/pet/entities/pet.entity';
+import { Doctor } from './modules/doctor/entities/doctor.entity';
 import {
   AcceptLanguageResolver,
   HeaderResolver,
@@ -30,9 +19,8 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import * as path from 'path';
-import { ScriptType } from './modules/script-type/entities/script-type.entity';
-import { ProjectStyle } from './modules/project-type/entities/project-type.entity';
 import { MinioModule } from './modules/minio/minio.module';
+import { Operation } from './modules/operation/entities/operation.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -41,21 +29,10 @@ import { MinioModule } from './modules/minio/minio.module';
       port: 3306,
       username: 'root',
       password: 'root',
-      database: 'script_light',
+      database: 'magic',
       synchronize: true,
       logging: true,
-      entities: [
-        User,
-        Artifact,
-        Chapter,
-        Project,
-        Script,
-        WorldView,
-        RolesViews,
-        RolesLora,
-        ScriptType,
-        ProjectStyle,
-      ],
+      entities: [User, Pet, Operation, Doctor],
       poolSize: 10,
       connectorPackage: 'mysql2',
       extra: {
@@ -72,15 +49,9 @@ import { MinioModule } from './modules/minio/minio.module';
     UserModule,
     RedisModule,
     ConfigModule,
-    ArtifactModule,
-    ChapterModule,
-    ProjectModule,
-    ScriptModule,
-    WorldViewModule,
-    RoleViewsModule,
-    RoleRolaModule,
-    ScriptTypeModule,
-    ProjectTypeModule,
+    PetModule,
+    DoctorModule,
+    OperationModule,
     MinioModule,
     I18nModule.forRoot({
       fallbackLanguage: 'zh',

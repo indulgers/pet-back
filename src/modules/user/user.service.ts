@@ -32,11 +32,8 @@ export class UserService {
     // 生成随机的六位验证码
 
     if (!validPhone(mobile))
-      return ResultData.fail(
-        AppHttpCode.USER_PHONE_NOT_FOUND,
-        '非法的手机号格式',
-      );
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+      return ResultData.fail(AppHttpCode.FAIL, '非法的手机号格式');
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
 
     // 模拟发送验证码的操作，这里只是输出到控制台
     console.log(`Sending verification code ${code} to ${mobile}`);
@@ -64,14 +61,11 @@ export class UserService {
     });
 
     if (!foundUser) {
-      return ResultData.fail(
-        AppHttpCode.USER_PHONE_NOT_FOUND,
-        '用户手机号不存在',
-      );
+      return ResultData.fail(AppHttpCode.FAIL, '用户手机号不存在');
     }
     // 验证验证码是否正确
     if (!(await this.verifyCode(user.mobile, user.verifyCode))) {
-      return ResultData.fail(AppHttpCode.USER_VERIFY_CODE_ERROR, '验证码错误');
+      return ResultData.fail(AppHttpCode.FAIL, '验证码错误');
     }
 
     // 生成 token
@@ -84,14 +78,11 @@ export class UserService {
   async register(user: RegisterUserDto): Promise<ResultData> {
     const verifyCode = await this.redisService.get(`verifyCode_${user.mobile}`);
     if (!verifyCode) {
-      return ResultData.fail(
-        AppHttpCode.USER_VERIFY_CODE_INVALID,
-        '验证码已失效',
-      );
+      return ResultData.fail(AppHttpCode.FAIL, '验证码已失效');
     }
 
     if (user.verifyCode !== verifyCode) {
-      return ResultData.fail(AppHttpCode.USER_VERIFY_CODE_ERROR, '验证码错误');
+      return ResultData.fail(AppHttpCode.FAIL, '验证码错误');
     }
 
     const foundUser = await this.userRepository.findOneBy({
@@ -99,7 +90,7 @@ export class UserService {
     });
 
     if (foundUser) {
-      return ResultData.fail(AppHttpCode.USER_CREATE_EXISTING, '用户已存在');
+      return ResultData.fail(AppHttpCode.FAIL, '用户已存在');
     }
 
     const newUser = new User();
@@ -113,7 +104,7 @@ export class UserService {
       return ResultData.ok(instanceToPlain(newUser));
     } catch (e) {
       this.logger.error(e, UserService);
-      return ResultData.fail(AppHttpCode.USER_REGISTER_FAIL, '注册失败');
+      return ResultData.fail(AppHttpCode.FAIL, '注册失败');
     }
   }
 
