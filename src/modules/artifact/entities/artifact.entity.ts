@@ -3,13 +3,15 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn, ManyToOne, JoinColumn
-} from "typeorm";
+  PrimaryColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Project } from "../../project/entities/project.entity";
-import { Script } from "../../script/entities/script.entity";
-import { Chapter } from "../../chapter/entities/chapter.entity";
-import { User } from "../../user/entities/user.entity";
+import { Project } from '../../project/entities/project.entity';
+import { Script } from '../../script/entities/script.entity';
+import { Chapter } from '../../chapter/entities/chapter.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('artifact')
 export class Artifact {
@@ -22,7 +24,6 @@ export class Artifact {
   })
   public id: string;
 
-
   @ApiProperty({ type: String, description: '流程id' })
   @Column({
     type: 'varchar',
@@ -31,34 +32,6 @@ export class Artifact {
     nullable: false, // 设置为非 NULL
   })
   public flow_id: string;
-
-  @ApiProperty({ type: String, description: '用户id' })
-  @Column({
-    type: 'varchar',
-    length: 32,
-    comment: '用户id',
-    nullable: false, // 设置为非 NULL
-    unique: true, // 唯一约束
-  })
-  public user_id: string;
-
-  @ApiProperty({ type: String, description: '文案id' })
-  @Column({
-    type: 'varchar',
-    length: 32,
-    comment: '文案id',
-    nullable: false, // 设置为非 NULL
-  })
-  public script_id: string;
-
-  @ApiProperty({ type: String, description: '章节id' })
-  @Column({
-    type: 'varchar',
-    length: 32,
-    comment: '章节id',
-    nullable: false, // 设置为非 NULL
-  })
-  public chapter_id: string;
 
   @ApiProperty({ type: Number, description: '章节序号' })
   @Column({

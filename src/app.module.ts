@@ -30,8 +30,9 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import * as path from 'path';
-import { ScriptType } from "./modules/script-type/entities/script-type.entity";
-import { ProjectStyle } from "./modules/project-type/entities/project-type.entity";
+import { ScriptType } from './modules/script-type/entities/script-type.entity';
+import { ProjectStyle } from './modules/project-type/entities/project-type.entity';
+import { MinioModule } from './modules/minio/minio.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -80,6 +81,7 @@ import { ProjectStyle } from "./modules/project-type/entities/project-type.entit
     RoleRolaModule,
     ScriptTypeModule,
     ProjectTypeModule,
+    MinioModule,
     I18nModule.forRoot({
       fallbackLanguage: 'zh',
       resolvers: [

@@ -19,7 +19,7 @@ export class ArtifactController extends CrudController<Artifact> {
     super(artifactService);
   }
 
-  @Post()
+  @Post('/create')
   createArtifact(@Body() createArtifactDto: CreateArtifactDto) {
     return this.artifactService.create(createArtifactDto);
   }

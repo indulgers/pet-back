@@ -9,9 +9,9 @@ import { plainToInstance } from 'class-transformer';
 import { guid } from '../../common/utils/utils';
 import { dynamicQueryDto } from './dto/dynamicQuery.dto';
 import { Script } from '../script/entities/script.entity';
-import { CrudService } from "../shared/crud.service";
+import { CrudService } from '../shared/crud.service';
 @Injectable()
-export class ProjectService extends CrudService<Project>{
+export class ProjectService extends CrudService<Project> {
   constructor(@InjectRepository(Project) repo) {
     super(repo);
   }
@@ -22,11 +22,11 @@ export class ProjectService extends CrudService<Project>{
   private readonly projectManager: EntityManager;
 
   @InjectRepository(Script)
-  private readonly scriptManager: Repository<Script>;
+  private readonly scriptRepository: Repository<Script>;
 
   private logger = new Logger();
   async create(createProjectDto: CreateProjectDto) {
-    const script = await this.scriptManager.findOne({
+    const script = await this.scriptRepository.findOne({
       where: { script_id: createProjectDto.script.script_id },
     });
     if (!script) {
@@ -45,21 +45,6 @@ export class ProjectService extends CrudService<Project>{
 
   async findAllProjectsWithScripts(): Promise<Project[]> {
     return this.projectRepository.find({ relations: ['script'] });
-  }
-  async update(project_id: string, updateProjectDto: UpdateProjectDto) {
-    const project = await this.projectRepository.findOne({
-      where: {
-        project_id: project_id,
-      },
-    });
-    if (!project) {
-      // 处理找不到项目的情况，可以抛出异常或返回相应的错误信息
-      throw new NotFoundException(`Project with id ${project_id} not found`);
-    }
-    // 更新项目的属性
-    Object.assign(project, updateProjectDto);
-    // 保存更新后的项目
-    return await this.projectRepository.save(project);
   }
 
   async dynamicSearch(queryDto: dynamicQueryDto): Promise<Project[]> {
@@ -85,5 +70,4 @@ export class ProjectService extends CrudService<Project>{
 
     return await queryBuilder.getMany();
   }
-
 }

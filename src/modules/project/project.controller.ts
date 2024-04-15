@@ -31,16 +31,9 @@ export class ProjectController extends CrudController<Project> {
   findDynamic(@Body() queryDto: dynamicQueryDto) {
     return this.ProjectService.dynamicSearch(queryDto);
   }
-  @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.ProjectService.update(id, updateProjectDto);
-  }
+
   @Get('/getProjectByScript')
   async findAllProjectsWithScripts() {
     return this.ProjectService.findAllProjectsWithScripts();
-  }
-  @Delete('/delete/:id')
-  remove(@Param('id') id: string) {
-    return this.ProjectService.remove(id);
   }
 }

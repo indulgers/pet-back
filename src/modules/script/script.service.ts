@@ -71,22 +71,18 @@ export class ScriptService extends CrudService<Script> {
   async findWithMultipleFields(
     queryDto: MultiFieldQueryDto,
   ): Promise<Script[]> {
-    const { script_name, nickname } = queryDto;
+    const queryBuilder = this.scriptRepository.createQueryBuilder('script');
+    const dynamicConditions = {};
 
-    const queryBuilder = this.scriptRepository
-      .createQueryBuilder('script')
-      .leftJoinAndSelect('script.user', 'user');
-
-    if (script_name) {
-      queryBuilder.andWhere('script.script_name = :script_name', {
-        script_name,
-      });
+    // 将非空字段添加到动态条件中
+    for (const [key, value] of Object.entries(queryDto)) {
+      if (value !== undefined) {
+        dynamicConditions[key] = value;
+      }
     }
 
-    if (nickname) {
-      queryBuilder.andWhere('user.nickname = :nickname', { nickname });
-    }
+    queryBuilder.andWhere(dynamicConditions);
 
-    return queryBuilder.getMany();
+    return await queryBuilder.getMany();
   }
 }
