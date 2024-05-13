@@ -2,14 +2,15 @@ import { LoginUserDto } from './dto/login.dto';
 import { RegisterUserDto } from './dto/register.dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ResultData } from '../../common/utils/result';
 import { AppHttpCode } from '../../common/enums/code.enum';
 import { JwtService } from '@nestjs/jwt';
-import { instanceToPlain } from 'class-transformer';
+
 import { RedisService } from '../../redis/redis.service';
 import { guid } from '../../common/utils/utils';
+import { Operation } from '../operation/entities/operation.entity';
 import { validPhone } from '../../common/utils/validate';
 import { RedisService as RedisTokenService } from 'nestjs-redis';
 @Injectable()
@@ -18,6 +19,9 @@ export class UserService {
 
   @InjectRepository(User)
   private userRepository: Repository<User>;
+
+  @InjectRepository(Operation)
+  private operationRepository: Repository<Operation>;
 
   @Inject(RedisService)
   private redisService: RedisService;
@@ -53,7 +57,44 @@ export class UserService {
     // 检查是否有存储的验证码，并且匹配用户输入的验证码
     return storedCode && storedCode === code;
   }
+  async passLogin(user: LoginUserDto): Promise<ResultData> {
+    const foundUser = await this.userRepository.findOneBy({
+      nickname: user.nickname,
+      password: user.password,
+    });
 
+    if (!foundUser) {
+      return ResultData.fail(AppHttpCode.FAIL, '用户手机号或密码错误');
+    }
+    // 生成 token
+    const data = this.genToken({ mobile: user.mobile, user_id: foundUser.id });
+    this.logger.log(data);
+    return ResultData.ok(data);
+  }
+
+  async create(user: User): Promise<ResultData> {
+    const newUser = this.userRepository.create(user);
+    newUser.id = guid();
+    await this.userRepository.save(newUser);
+    return ResultData.ok(newUser);
+  }
+
+  async findAll(page = 1, pageSize = 10): Promise<ResultData<User[]>> {
+    const users = await this.userRepository.find({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+    return ResultData.ok(users);
+  }
+
+  async getAdminList(page = 1, pageSize = 10): Promise<ResultData<User[]>> {
+    const users = await this.userRepository.find({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      where: { role: In([1, 2]) },
+    });
+    return ResultData.ok(users);
+  }
   // 用户登录函数
   async login(user: LoginUserDto): Promise<ResultData> {
     const foundUser = await this.userRepository.findOneBy({
@@ -69,7 +110,7 @@ export class UserService {
     }
 
     // 生成 token
-    const data = this.genToken({ mobile: user.mobile });
+    const data = this.genToken({ mobile: user.mobile, user_id: foundUser.id });
     this.logger.log(data);
     return ResultData.ok(data);
   }
@@ -96,19 +137,18 @@ export class UserService {
     const newUser = new User();
     newUser.nickname = user.nickname;
     newUser.mobile = user.mobile;
-    newUser.user_id = guid();
     newUser.id = guid();
     this.logger.log(newUser.nickname);
     try {
       await this.userRepository.save(newUser);
-      return ResultData.ok(instanceToPlain(newUser));
+      return ResultData.ok(newUser);
     } catch (e) {
       this.logger.error(e, UserService);
       return ResultData.fail(AppHttpCode.FAIL, '注册失败');
     }
   }
 
-  genToken(payload: { mobile: string }): {
+  genToken(payload: { mobile?: string; user_id?: string }): {
     access_token: string;
     refresh_token: string;
   } {
@@ -121,22 +161,31 @@ export class UserService {
       expiresIn: '30d',
     });
     this.logger.log(access_token, refresh_token);
-    return { access_token, refresh_token };
+    return { access_token, refresh_token, ...payload };
   }
 
-  async getUserInfo(mobile: string): Promise<User | null> {
+  async getUserInfo(
+    mobile?: string,
+    id?: string,
+  ): Promise<ResultData<User | null>> {
+    let foundUser: User | null = null;
     // 在数据库中查找用户，可以使用 userRepository 或者其他相关的方法
-    const foundUser = await this.userRepository.findOneBy({ mobile });
+    if (id) {
+      foundUser = await this.findUserById(id);
+    }
+    if (mobile) {
+      foundUser = await this.findUserByMobile(mobile);
+    }
     if (!foundUser) {
       return null; // 如果用户不存在，返回 null
     }
     // 如果用户存在，可以在这里处理返回的用户信息，例如过滤敏感信息等
-    return foundUser;
+    return ResultData.ok(foundUser);
   }
-  async findUserById(user_id: string): Promise<User | null> {
+  async findUserById(id: string): Promise<User | null> {
     // 在数据库中查找用户，使用用户的 ID 进行查询
     const foundUser = await this.userRepository.findOne({
-      where: [{ user_id }], // 将查询条件包装在数组中
+      where: [{ id }], // 将查询条件包装在数组中
     });
 
     if (!foundUser) {
@@ -158,5 +207,33 @@ export class UserService {
 
     // 如果用户存在，可以在这里处理返回的用户信息，例如过滤敏感信息等
     return foundUser;
+  }
+
+  async update(id: string, user: User): Promise<ResultData> {
+    const foundUser = await this.userRepository.findOne({ where: { id } });
+    if (!foundUser) {
+      return ResultData.fail(AppHttpCode.FAIL, '用户不存在');
+    }
+    await this.userRepository.update(id, user);
+    return ResultData.ok();
+  }
+  async remove(id: string, userId?: string): Promise<ResultData> {
+    const foundUser = await this.userRepository.findOne({ where: { id } });
+    if (!foundUser) {
+      return ResultData.fail(AppHttpCode.FAIL, '用户不存在');
+    }
+
+    foundUser.status = -1; // 将用户状态置为 -1 代表删除
+    const [updatedUser, operation] = await Promise.all([
+      this.userRepository.save(foundUser),
+      this.operationRepository.create({
+        id: guid(),
+        mode: 'delete',
+        model: 'user',
+        user_id: userId,
+      }),
+    ]);
+    await this.operationRepository.save(operation);
+    return ResultData.ok();
   }
 }

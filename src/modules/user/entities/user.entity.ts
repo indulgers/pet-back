@@ -20,15 +20,6 @@ export class User {
   })
   public id: string;
 
-  @ApiProperty({ type: String, description: '用户id' })
-  @Column({
-    type: 'varchar',
-    length: 64,
-    comment: '用户id',
-    default: '',
-  })
-  public user_id: string;
-
   @ApiProperty({ type: String, description: '用户登录名' })
   @Column({
     type: 'varchar',
@@ -46,6 +37,15 @@ export class User {
     default: '0',
   })
   mobile: string;
+
+  @ApiProperty({ type: String, description: '用户密码' })
+  @Column({
+    type: 'varchar',
+    length: 50,
+    comment: '用户密码',
+    default: '',
+  })
+  password: string;
 
   @ApiProperty({ type: Number, description: '角色' })
   @Column({

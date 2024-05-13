@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './modules/user/entities/user.entity';
+import { Post } from './modules/post/entities/post.entity';
 import { UserModule } from './modules/user/user.module';
 import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
@@ -11,6 +12,7 @@ import { PetModule } from './modules/pet/pet.module';
 import { DoctorModule } from './modules/doctor/doctor.module';
 import { OperationModule } from './modules/operation/operation.module';
 import { Pet } from './modules/pet/entities/pet.entity';
+import { PostModule } from './modules/post/post.module';
 import { Doctor } from './modules/doctor/entities/doctor.entity';
 import {
   AcceptLanguageResolver,
@@ -32,7 +34,7 @@ import { Operation } from './modules/operation/entities/operation.entity';
       database: 'magic',
       synchronize: true,
       logging: true,
-      entities: [User, Pet, Operation, Doctor],
+      entities: [User, Pet, Operation, Doctor, Post],
       poolSize: 10,
       connectorPackage: 'mysql2',
       extra: {
@@ -53,6 +55,7 @@ import { Operation } from './modules/operation/entities/operation.entity';
     DoctorModule,
     OperationModule,
     MinioModule,
+    PostModule,
     I18nModule.forRoot({
       fallbackLanguage: 'zh',
       resolvers: [

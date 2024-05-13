@@ -1,6 +1,6 @@
 import { Controller, Get, Logger, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { LoginGuard } from './login.guard';
+;
 import { UseLanguageInterceptor } from './intercepter/language-intercepter';
 import { I18n, I18nContext, I18nService } from 'nestjs-i18n';
 

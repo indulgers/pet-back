@@ -12,6 +12,7 @@ import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 import { Pet } from './entities/pet.entity';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { ListResult } from '@/interface';
 @Controller('pet')
 @ApiTags('Pet')
 export class PetController {
@@ -30,7 +31,7 @@ export class PetController {
   @ApiQuery({ name: 'username', required: false })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'pageSize', required: false })
-  @ApiResponse({ status: 200, type: [Pet] })
+  @ApiResponse({ status: 200, type: ListResult<Pet> })
   findAll() {
     return this.petService.findAll();
   }
