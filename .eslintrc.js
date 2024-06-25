@@ -5,7 +5,20 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin',
+  new webpack.IgnorePlugin({
+    checkResource(resource) {
+    const lazyImports = [
+      "@nestjs/microservices",
+      "@nestjs/microservices/microservices-module",
+      "@nestjs/websockets/socket-module",
+      "cache-manager",
+      "class-validator",
+      "class-transformer",
+      "class-transformer/storage"
+    ];
+}})
+],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',

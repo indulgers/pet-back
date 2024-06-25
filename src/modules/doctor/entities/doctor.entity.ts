@@ -20,11 +20,28 @@ export class Doctor {
 
   @Column({
     type: 'varchar',
+    length: 255,
+    comment: '医生账号',
+    default: '',
+  })
+  description: string;
+
+  @Column({
+    type: 'varchar',
     length: 32,
     comment: '医生身份证',
     default: '',
   })
   id_card: string;
+
+  @Column({
+    type: 'varchar',
+    length: 32,
+    comment: '医生手机号',
+    default: '',
+  })
+  mobile: string;
+
   @Column({
     type: 'varchar',
     length: 32,
@@ -71,7 +88,12 @@ export class Doctor {
   })
   avatar: string;
 
-  
+  @Column({
+    type: 'int',
+    comment: '医生状态',
+    default: 0,
+  })
+  status: number;
 
   @Column({
     type: 'datetime',

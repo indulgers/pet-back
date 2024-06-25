@@ -45,6 +45,7 @@ export class Post {
     type: 'varchar',
     comment: '内容',
     nullable: false,
+    default:''
   })
   public content: string;
 
@@ -53,6 +54,7 @@ export class Post {
     type: 'varchar',
     comment: '封面',
     nullable: false,
+    default: ''
   })
   public cover: string;
 
@@ -65,6 +67,25 @@ export class Post {
     default: '', // 默认值为空字符串
   })
   public category: string;
+
+  @ApiProperty({type: String, description: '头像'})
+  @Column({
+    type: 'varchar',
+    length: 250,
+    comment: '头像',
+    default: ''
+  })
+  public avatar: string;
+
+  @ApiProperty({ type: String, description: '昵称' })
+  @Column({
+    type: 'varchar',
+    length: 50,
+    comment: '昵称',
+    nullable: false, // 设置为非 NULL
+    default: '', // 默认值为空字符串
+  })
+  public nickname: string;
 
   @ApiProperty({ type: String, description: '创建时间' })
   @CreateDateColumn({
@@ -79,6 +100,15 @@ export class Post {
     comment: '修改时间',
   })
   public update_time: Date;
+
+  @ApiProperty({ type: String, description: '点赞数' })
+  @Column({
+    type: 'int',
+    comment: '点赞数',
+    nullable: false, // 设置为非 NULL
+    default: 0, // 默认值为0
+  })
+  public likes: number;
 
   @ApiProperty({ type: String, description: '是否删除' })
   @Column({

@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResultData } from '@/common';
 import { guid } from '@/common/utils/utils';
+import axios from 'axios';
 @Injectable()
 export class PostService {
   @InjectRepository(Post)
@@ -17,10 +18,23 @@ export class PostService {
     newPost.create_time = new Date();
     newPost.user_id = createPostDto.userId;
     await this.postRepository.save(newPost);
+    axios.post('http://localhost:6006/add_post_to_lib', {
+      post_id: newPost.id,
+      title: newPost.title,
+    })
+    
     return ResultData.ok(newPost);
   }
 
-  async findAll(): Promise<ResultData<Post[]>> {
+  async findAll(title?:string): Promise<ResultData<Post[]>> {
+    const res = await axios.post('http://localhost:6006/search_posts', {
+      input: title,
+    })
+    const ids = res.data.map(post => post.post_id);
+    if(res.data.length > 0){
+      const posts = await this.postRepository.findByIds(ids);
+      return ResultData.ok(posts);
+    }
     const posts = await this.postRepository.find();
     return ResultData.ok(posts);
   }

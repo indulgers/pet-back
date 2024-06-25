@@ -23,6 +23,7 @@ import {
 import * as path from 'path';
 import { MinioModule } from './modules/minio/minio.module';
 import { Operation } from './modules/operation/entities/operation.entity';
+import { CommentModule } from './modules/comment/comment.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -68,6 +69,7 @@ import { Operation } from './modules/operation/entities/operation.entity';
         watch: true,
       },
     }),
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

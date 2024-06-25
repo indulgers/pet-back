@@ -18,8 +18,8 @@ dependencies:
     specifier: ^10.0.3
     version: 10.0.3(@nestjs/common@9.0.5)
   '@nestjs/mapped-types':
-    specifier: '*'
-    version: 0.0.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
+    specifier: ^2.0.5
+    version: 2.0.5(@nestjs/common@9.0.5)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
   '@nestjs/passport':
     specifier: ^10.0.2
     version: 10.0.2(@nestjs/common@9.0.5)(passport@0.6.0)
@@ -89,6 +89,9 @@ dependencies:
   nestjs-i18n:
     specifier: ^10.3.6
     version: 10.3.6(@nestjs/common@9.0.5)(@nestjs/core@9.0.5)(class-validator@0.14.0)(rxjs@7.2.0)
+  nestjs-minio-client:
+    specifier: ^2.2.0
+    version: 2.2.0(@nestjs/common@9.0.5)(@nestjs/core@9.0.5)
   nestjs-redis:
     specifier: ^1.3.3
     version: 1.3.3(@nestjs/platform-express@9.0.0)(cache-manager@5.2.4)(class-transformer@0.5.1)(class-validator@0.14.0)
@@ -1077,18 +1080,6 @@ packages:
       jsonwebtoken: 9.0.0
     dev: false
 
-  /@nestjs/mapped-types@0.0.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13):
-    resolution: {integrity: sha512-4G4Ui7Sj0UqXiZsUFk/6cPD3K7uZEFSElzkOftaJ3/lXW+HUi1/vfWXabF53qrzO1enTRQDxt1plDbP6SsqXEg==}
-    peerDependencies:
-      class-transformer: ^0.2.3
-      class-validator: ^0.11.1
-      reflect-metadata: ^0.1.12
-    dependencies:
-      class-transformer: 0.5.1
-      class-validator: 0.14.0
-      reflect-metadata: 0.1.13
-    dev: false
-
   /@nestjs/mapped-types@2.0.2(@nestjs/common@9.0.5)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13):
     resolution: {integrity: sha512-V0izw6tWs6fTp9+KiiPUbGHWALy563Frn8X6Bm87ANLRuE46iuBMD5acKBDP5lKL/75QFvrzSJT7HkCbB0jTpg==}
     peerDependencies:
@@ -1096,6 +1087,25 @@ packages:
       class-transformer: ^0.4.0 || ^0.5.0
       class-validator: ^0.13.0 || ^0.14.0
       reflect-metadata: ^0.1.12
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      '@nestjs/common': 9.0.5(cache-manager@5.2.4)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.2.0)
+      class-transformer: 0.5.1
+      class-validator: 0.14.0
+      reflect-metadata: 0.1.13
+    dev: false
+
+  /@nestjs/mapped-types@2.0.5(@nestjs/common@9.0.5)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13):
+    resolution: {integrity: sha512-bSJv4pd6EY99NX9CjBIyn4TVDoSit82DUZlL4I3bqNfy5Gt+gXTa86i3I/i0iIV9P4hntcGM5GyO+FhZAhxtyg==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      class-transformer: ^0.4.0 || ^0.5.0
+      class-validator: ^0.13.0 || ^0.14.0
+      reflect-metadata: ^0.1.12 || ^0.2.0
     peerDependenciesMeta:
       class-transformer:
         optional: true
@@ -4756,6 +4766,19 @@ packages:
       string-format: 2.0.0
     dev: false
 
+  /nestjs-minio-client@2.2.0(@nestjs/common@9.0.5)(@nestjs/core@9.0.5):
+    resolution: {integrity: sha512-mz1vfJq/7YfSyVCIeZwOCfIfBz+msI9QynHS2QGO9GB+tVNnQOYta8PxFsH9tMxN7gNrjrf5jXsEIpgBB1oTeA==}
+    peerDependencies:
+      '@nestjs/common': '>=9.0.0'
+      '@nestjs/core': '>=9.0.0'
+    dependencies:
+      '@nestjs/common': 9.0.5(cache-manager@5.2.4)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.2.0)
+      '@nestjs/core': 9.0.5(@nestjs/common@9.0.5)(@nestjs/platform-express@9.0.0)(reflect-metadata@0.1.13)(rxjs@7.2.0)
+      minio: 7.1.3
+      reflect-metadata: 0.1.13
+      rxjs: 7.8.1
+    dev: false
+
   /nestjs-redis@1.3.3(@nestjs/platform-express@9.0.0)(cache-manager@5.2.4)(class-transformer@0.5.1)(class-validator@0.14.0):
     resolution: {integrity: sha512-YLvWtVKP38Uica7pL8T955jPi0MFmJ4+Wj3R/IHbLpsdCJkdA9wtfO9NoUpiZpM1aO1dEGcOBoStvgb0Uy7MGA==}
     dependencies:
@@ -5321,7 +5344,6 @@ packages:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
       tslib: 2.6.2
-    dev: true
 
   /safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}

@@ -34,10 +34,11 @@ export class Pet {
     type: 'varchar',
     length: 32,
     comment: '用户id',
+    name: 'user_id' ,
     nullable: false, // 设置为非 NULL
     default: '', // 默认值为空字符串
   })
-  public user_id: string;
+  public userId: string;
 
   @ApiProperty({ type: String, description: '宠物名称' })
   @Column({
@@ -77,14 +78,14 @@ export class Pet {
   })
   public age: number;
 
-  @ApiProperty({ type: String, description: '宠物生日' })
+  @ApiProperty({ type: Date, description: '宠物生日' })
   @Column({
     type: 'date',
     comment: '宠物生日',
     nullable: false, // 设置为非 NULL
     default: '1970-01-01', // 默认值为1970-01-01
   })
-  public birthday: string;
+  public birthday: Date
 
   @ApiProperty({ type: String, description: '是否绝育' })
   @Column({
